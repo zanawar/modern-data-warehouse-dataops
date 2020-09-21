@@ -1,0 +1,28 @@
+# Deploy JAR file in DBFS to databricks
+
+trigger: none
+
+variables:
+- group: Databricks-Dev
+- name: serviceConnection
+  value: primaryAzureConnection
+
+stages:
+- stage: 'Deploy_Jar'
+  jobs:
+  - job: 'Deploy_JAR_to_DBFS'
+    steps:
+    - download: drop
+    - template: deploy-jar-to-databricks.yaml
+      parameters:
+        azureServiceConnection: ${{variables.serviceConnection}}
+
+- stage: 'Deploy_Jobs'
+  jobs:
+  - job: 'Deploy_Databricks_Jobs'
+    steps:
+      - template: deploy-dbw-job.yaml
+        parameters:
+          azureServiceConnection: ${{variables.serviceConnection}}
+          jobName: MercuryJob
+          scriptName: deploy-jobs

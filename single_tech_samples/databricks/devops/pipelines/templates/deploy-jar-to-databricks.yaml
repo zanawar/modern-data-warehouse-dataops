@@ -1,0 +1,40 @@
+parameters:
+- name: azureServiceConnection
+  type: string
+
+steps:
+- task: AzureCLI@2
+  displayName: Get Databricks PAT Token
+  inputs:
+    azureSubscription: ${{parameters.azureServiceConnection}}
+    scriptType: bash
+    scriptPath: ./pipelines/scripts/auth-databricks.sh
+
+  ## databricks part: start
+  # Install Python. The version must match the version on the Databricks cluster.
+- task: UsePythonVersion@0
+  displayName: 'Use Python 3.7'
+  inputs:
+    versionSpec: 3.7
+
+  # Install required Python modules, including databricks-connect, required to execute a unit test
+  # on a cluster.
+- script: |
+    pip install pytest requests setuptools wheel
+    pip install databricks-cli
+  displayName: 'Load Python Dependencies'
+
+  # Use environment variables to pass Databricks login information to the Databricks Connect
+  # configuration function
+- script: |
+    databricks configure --token <<EOF
+    $(DATABRICKS_HOST_URL)
+    $(DATABRICKS_TOKEN)
+    EOF
+  displayName: 'Configure databricks-cli'
+
+- script: dbfs rm dbfs:/FileStore/jars/User-Databricks.jar
+  displayName: 'Remove JAR file if exists from destination'
+
+- script: dbfs cp $(Pipeline.Workspace)/test.jar dbfs:/FileStore/jars/User-Databricks.jar
+  displayName: 'Copy JAR file to databricks dbfs JAR directory'
