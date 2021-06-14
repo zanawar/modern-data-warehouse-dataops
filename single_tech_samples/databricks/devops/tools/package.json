@@ -1,0 +1,14 @@
+{
+  "name": "databricks-pipeline-tools",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "deploy-jobs": "node ./deploy-jobs"
+  },
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "axios": "0.19.2",
+    "minimist": "1.2.5"
+  }
+}

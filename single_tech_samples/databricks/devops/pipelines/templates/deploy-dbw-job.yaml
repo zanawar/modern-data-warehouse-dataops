@@ -1,0 +1,23 @@
+parameters:
+- name: azureServiceConnection
+  type: string
+- name: jobName
+  type: string
+- name: scriptName
+  type: string
+
+steps:
+- task: AzureCLI@2
+  displayName: Get Databricks PAT Token
+  inputs:
+    azureSubscription: ${{parameters.azureServiceConnection}}
+    scriptType: bash
+    scriptPath: ./pipelines/scripts/auth-databricks.sh
+
+- task: NodeTool@0 
+  inputs:
+    versionSpec: '12.x'
+- script: npm install --prefix pipelines/tools
+  displayName: "Run npm install"
+- script: npm run ${{parameters.scriptName}} --prefix pipelines/tools -- -d $(DATABRICKS_HOST_URL) -n ../../databricks/jobs/${{parameters.jobName}}.json
+  displayName: "Run deployment script"

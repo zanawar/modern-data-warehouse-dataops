@@ -1,7 +1,6 @@
 # Azure SQL Database
 
-[Azure SQL Database](https://azure.microsoft.com/en-au/services/sql-database/) is a relational database commonly used in the MDW architecture, typically in the serving layer. The following samples demonstrates how you might build CI/CD pipelines to deploy changes to 
-Azure SQL Database.
+[Azure SQL Database](https://azure.microsoft.com/en-au/services/sql-database/) is a relational database commonly used in the MDW architecture, typically in the serving layer. The following samples demonstrates how you might build CI/CD pipelines to deploy changes to Azure SQL Database.
 
 ## Contents
 1. [Key Concepts](./README.md#key-concepts)
@@ -70,51 +69,35 @@ The following are some sample [Azure DevOps](https://docs.microsoft.com/en-us/az
 
 ### Prerequisites
 
-1. [Github account](https://github.com/)
-2. [Azure Account](https://azure.microsoft.com/en-au/free/search/?&ef_id=Cj0KCQiAr8bwBRD4ARIsAHa4YyLdFKh7JC0jhbxhwPeNa8tmnhXciOHcYsgPfNB7DEFFGpNLTjdTPbwaAh8bEALw_wcB:G:s&OCID=AID2000051_SEM_O2ShDlJP&MarinID=O2ShDlJP_332092752199_azure%20account_e_c__63148277493_aud-390212648371:kwd-295861291340&lnkd=Google_Azure_Brand&dclid=CKjVuKOP7uYCFVapaAoddSkKcA)
-   - *Permissions needed*: ability to create and deploy to an azure [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview), a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals), and grant the [collaborator role](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) to the service principal over the resource group.
-3. [Azure DevOps Account](https://azure.microsoft.com/en-us/services/devops/)
-   - *Permissions needed*: ability to create [service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml) and [pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops&tabs=yaml).
+Make sure you have [all the prerequisite accounts set up and software installed](../README.md) to work with these samples.
 
-#### Software Prerequisites
+#### Additional Software Prerequisites
 
-1. For Windows users, [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-2. [Azure CLI 2.0.49+](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
-3. [Azure DevOps CLI](https://marketplace.visualstudio.com/items?itemName=ms-vsts.cli)
-4. [jq](https://stedolan.github.io/jq/)
-5. For editing AzureSQL objects, [Visual Studio 2019](https://visualstudio.microsoft.com/vs/). For earlier version of Visual Studio, you may need to install [SQL Server Data Tools](https://docs.microsoft.com/en-us/sql/ssdt/download-sql-server-data-tools-ssdt?view=sql-server-ver15) separately. 
+1. [jq](https://stedolan.github.io/jq/)
+2. For editing AzureSQL objects, [Visual Studio 2019](https://visualstudio.microsoft.com/vs/). For earlier version of Visual Studio, you may need to install [SQL Server Data Tools](https://docs.microsoft.com/en-us/sql/ssdt/download-sql-server-data-tools-ssdt?view=sql-server-ver15) separately.
 
 ### Setup and deployment
 
-To setup the samples, run the following:
+To setup the sample, run the following:
 
-1. Ensure that:
-   - You are logged in to the Azure CLI. To login, run `az login`.
-   - Azure CLI is targeting the Azure Subscription you want to deploy the resources to.
-      - To set target Azure Subscription, run `az account set -s <AZURE_SUBSCRIPTION_ID>`
-   - Azure CLI is targeting the Azure DevOps organization and project you want to deploy the pipelines to. 
-      - To set target Azure DevOps project, run `az devops configure --defaults organization=https://dev.azure.com/MY_ORG/ project=MY_PROJECT`
-2. Fork* and clone this repository. `cd` in to `single_tech_samples/azuresql`.
-3. Set the following environment variables:
+1. `cd` in to `single_tech_samples/azuresql`.
+2. Set the following environment variables:
    1. **GITHUB_REPO_URL** - URL of your forked github repo
    2. **GITHUB_PAT_TOKEN** - a Github PAT token. Generate them [here](https://github.com/settings/tokens). This requires "repo" scope.
    Optionally, set the following environment variables: 
    1. **DEPLOYMENT_ID** - string appended to all resource names. *Default*: random five character string.
-   2. **BRANCH_NAME**** - git branch with Azure DevOps pipelines definitions to deploy. *Default*: master.
+   2. **BRANCH_NAME*** - git branch with Azure DevOps pipelines definitions to deploy. *Default*: master.
    3. **RESOURCE_GROUP_NAME** - target resource group to deploy to
    4. **RESOURCE_GROUP_LOCATION** - location of target resource group
    5. **AZURESQL_SERVER_PASSWORD** - Password of the admin account for your AzureSQL server instance. Default: mdw-dataops-SqlP@ss-${DEPLOYMENT_ID}
       1. Username is set to *sqlAdmin*.
-4. Run `./deploy.sh`.***
+3. Run `./deploy.sh`.**
 
 #### Additional notes:
 
-**Your forked repo will serve as the main repository which triggers all pipelines -- allowing you complete control over the sample solution as compared to using the main Azure-Samples repository directly. All pipeline defintions are also pulled from this fork*.
+**The pipelines are deployed to use the master branch by default. This can be inconvenient when working on the pipelines in a different branch. You can set the BRANCH_NAME environment variable to override this behaviour. This makes it easier to test changes to your pipeline file. Be sure to push the changes in your yaml file to your repo before running the deployment script. Note that it does not change branch triggers.*
 
-***The pipelines are deployed to use the master branch by default. This can be inconvenient when working on the pipelines in a different branch. You can set the BRANCH_NAME environment variable to override this behaviour. This makes it easier to test changes to your pipeline file. Be sure to push the changes in your yaml file to your repo before running the deployment script. Note that it does not change branch triggers.*
-
-****Note that in case of any errors midway through the script, in order to rerun the deployment, you may need to perform some cleanup of any deployed resources. See [Cleanup](./README.md#Cleanup
-) below.*
+***Note that in case of any errors midway through the script, in order to rerun the deployment, you may need to perform some cleanup of any deployed resources. See [Cleanup](./README.md#Cleanup) below.*
 
 ### Deployed resources
 
